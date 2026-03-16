@@ -27,3 +27,11 @@ stages:
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         tags: |
           $(tag)
+
+    - bash: |
+        npm i -g snyk
+        snyk auth "$SNYK_TOKEN"
+        snyk container test "$(imageName):$(tag)" --file="$(Build.SourcesDirectory)/Dockerfile" --severity-threshold=high
+      displayName: 'Snyk: scan container image'
+      env:
+        SNYK_TOKEN: $(ci-azuredevops-juice-shop-open-sourcecode)
